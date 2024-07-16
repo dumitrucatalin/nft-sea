@@ -1,2 +1,2 @@
 # nft-sea
-An NFT Marketplase
+An NFT Marketplace
