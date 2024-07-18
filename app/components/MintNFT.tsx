@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, ChangeEvent } from 'react';
 import MintBanner from './MintBanner';
+import MintedNFTDialog from './MintedNFTDialog';
 
 const MintNFT: React.FC = () => {
     const [image, setImage] = useState<File | null>(null);
@@ -8,6 +9,9 @@ const MintNFT: React.FC = () => {
     const [description, setDescription] = useState<string>('');
     const [minting, setMinting] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [mintedNFT, setMintedNFT] = useState<{ imageHash: string; title: string; description: string } | null>(null);
+
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -39,10 +43,8 @@ const MintNFT: React.FC = () => {
                 const imageHash = data.IpfsHash;
                 console.log('Image uploaded to IPFS with hash:', imageHash);
 
-                // Proceed with minting the NFT using the imageHash, title, and description
-                console.log('Minting NFT with', { imageHash, title, description });
-
-                // Implement your smart contract interaction logic here
+                setMintedNFT({ imageHash, title, description });
+                setIsDialogOpen(true);
                 setMessage('NFT minted successfully!');
             } else {
                 setMessage('Failed to mint NFT.');
@@ -96,6 +98,11 @@ const MintNFT: React.FC = () => {
                 </button>
                 {message && <p className="text-white mt-4">{message}</p>}
             </div>
+            <MintedNFTDialog
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                mintedNFT={mintedNFT}
+            />
         </div>
     );
 };

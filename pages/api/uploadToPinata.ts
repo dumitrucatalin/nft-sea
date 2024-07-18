@@ -35,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 if (err) console.error('Failed to delete temporary file:', err);
             });
         }
+        // TODO after uploading to Pinata, need to send it to the smart contract
     });
 };
 

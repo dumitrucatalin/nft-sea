@@ -14,7 +14,7 @@ const Footer = () => {
                 />
                 <span className="font-opensans text-base font-normal text-left"> NFT Sea 2024 © All rights reserved</span>
 
-                <button className="bg-gradient-to-r text-white py-2 px-4 min-h-[60px]">
+                <button className="bg-gradient-to-r text-white py-2 px-4 min-h-[60px] rounded">
                     Explore Marketplace
                 </button>
             </div>
