@@ -1,7 +1,9 @@
 "use client"
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import MintBanner from './MintBanner';
 import MintedNFTDialog from './MintedNFTDialog';
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { parseAbi } from 'viem';
 
 const MintNFT: React.FC = () => {
     const [image, setImage] = useState<File | null>(null);
@@ -12,21 +14,27 @@ const MintNFT: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [mintedNFT, setMintedNFT] = useState<{ imageHash: string; title: string; description: string } | null>(null);
 
-
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
         setImage(file);
     };
 
+    const { data: hash, error, isPending, writeContract } = useWriteContract();
+    const { address } = useAccount();
 
     const mintNFT = async () => {
+        if (!address) {
+            setMessage('Please connect your wallet.');
+            return;
+        }
+
         if (!image) {
             setMessage('Please select an image to upload.');
             return;
         }
 
         setMinting(true);
-        setMessage('');
+        setMessage('Uploading image to IPFS...');
 
         try {
             const formData = new FormData();
@@ -41,11 +49,17 @@ const MintNFT: React.FC = () => {
 
             if (response.ok) {
                 const imageHash = data.IpfsHash;
+
                 console.log('Image uploaded to IPFS with hash:', imageHash);
 
-                setMintedNFT({ imageHash, title, description });
-                setIsDialogOpen(true);
-                setMessage('NFT minted successfully!');
+                writeContract({
+                    address: '0xc507d4FbD9b5Bd102668c00a3eF7ec68bF95C6A1',
+                    abi: parseAbi(['function mint(address to, string tokenURI_)']),
+                    functionName: 'mint',
+                    args: [address, imageHash],
+                });
+
+                setMessage('Image uploaded to IPFS successfully. Waiting for transaction confirmation...');
             } else {
                 setMessage('Failed to mint NFT.');
             }
@@ -57,6 +71,24 @@ const MintNFT: React.FC = () => {
         }
     };
 
+    const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+        hash,
+    });
+
+    // React to changes in transaction states
+    useEffect(() => {
+        if (isConfirming) {
+            setMessage('Confirming transaction...');
+        }
+        if (isConfirmed) {
+            setMessage('Transaction confirmed.');
+            setIsDialogOpen(true);
+            setMintedNFT({ imageHash: hash!, title, description });
+        }
+        if (error) {
+            setMessage(`Transaction error: ${error.message}`);
+        }
+    }, [isConfirming, isConfirmed, error]);
 
     return (
         <div className="flex flex-col justify-center items-center bg-transparent">
@@ -84,19 +116,26 @@ const MintNFT: React.FC = () => {
                 ></textarea>
                 <button
                     onClick={mintNFT}
-                    className="text-white px-6 py-2 mr-2 bg-gray-700 rounded"
-                    disabled={minting}
+                    className="text-white px-6 py-2 mr-2 rounded"
+                    disabled={minting || isConfirming}
                 >
-                    {minting ? 'Minting...' : 'Mint without listing'}
+                    {minting || isConfirming ? 'Processing...' : 'Mint without listing'}
                 </button>
+
                 <button
                     onClick={mintNFT} // Adjust if needed for different functionality
                     className="bg-gradient-to-r text-white px-6 py-2 min-h-[60px] rounded"
                     disabled={minting}
                 >
-                    {minting ? 'Minting...' : 'Mint and list immediately'}
+                    {minting || isConfirming ? 'Processing...' : 'Mint and list immediately'}
+
                 </button>
-                {message && <p className="text-white mt-4">{message}</p>}
+                {message && (
+                    <p className="text-white mt-4 max-w-[80vw] max-h-[300px] overflow-auto break-words p-2">
+                        {message}
+                    </p>
+                )}
+
             </div>
             <MintedNFTDialog
                 isOpen={isDialogOpen}
