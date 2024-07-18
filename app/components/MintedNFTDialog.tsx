@@ -21,8 +21,9 @@ const MintedNFTDialog: React.FC<MintedNFTDialogProps> = ({ isOpen, onClose, mint
                         <div className="flex flex-col items-center justify-center">
                             <div className="w-full sm:w-48 mb-4">
                                 {mintedNFT && (
-                                    <img src={`https://gateway.pinata.cloud/ipfs/${mintedNFT.imageHash}`} alt="Minted NFT" className="h-48 w-full object-cover rounded-md" />
+                                    <img src={`https://ipfs.io/ipfs/${mintedNFT.imageHash}`} alt="Minted NFT" className="h-48 w-full object-cover rounded-md" />
                                 )}
+
                             </div>
                             <DialogTitle as="h3" className="text-2xl leading-6 font-bold text-white mb-4">
                                 {mintedNFT?.title}

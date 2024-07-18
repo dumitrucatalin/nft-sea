@@ -58,7 +58,7 @@ const MintNFT: React.FC = () => {
                     functionName: 'mint',
                     args: [address, imageHash],
                 });
-
+                setMintedNFT({ imageHash, title, description });
                 setMessage('Image uploaded to IPFS successfully. Waiting for transaction confirmation...');
             } else {
                 setMessage('Failed to mint NFT.');
@@ -83,7 +83,6 @@ const MintNFT: React.FC = () => {
         if (isConfirmed) {
             setMessage('Transaction confirmed.');
             setIsDialogOpen(true);
-            setMintedNFT({ imageHash: hash!, title, description });
         }
         if (error) {
             setMessage(`Transaction error: ${error.message}`);
