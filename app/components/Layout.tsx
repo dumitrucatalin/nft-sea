@@ -13,7 +13,7 @@ const queryClient = new QueryClient()
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);

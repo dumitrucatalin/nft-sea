@@ -2,34 +2,62 @@
 import React, { useState, ChangeEvent } from 'react';
 import MintBanner from './MintBanner';
 
-// Define types for the component state
-interface MintNFTState {
-    image: File | null;
-    title: string;
-    description: string;
-}
-
 const MintNFT: React.FC = () => {
     const [image, setImage] = useState<File | null>(null);
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-
+    const [minting, setMinting] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>('');
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-        // Update to handle file input for images
         const file = event.target.files ? event.target.files[0] : null;
         setImage(file);
     };
 
+
     const mintNFT = async () => {
-        // Placeholder function for minting NFT
-        console.log('Minting NFT with', { image, title, description });
-        // Implement your smart contract interaction logic here
+        if (!image) {
+            setMessage('Please select an image to upload.');
+            return;
+        }
+
+        setMinting(true);
+        setMessage('');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', image, image.name);
+
+            const response = await fetch('/api/uploadToPinata', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const imageHash = data.IpfsHash;
+                console.log('Image uploaded to IPFS with hash:', imageHash);
+
+                // Proceed with minting the NFT using the imageHash, title, and description
+                console.log('Minting NFT with', { imageHash, title, description });
+
+                // Implement your smart contract interaction logic here
+                setMessage('NFT minted successfully!');
+            } else {
+                setMessage('Failed to mint NFT.');
+            }
+        } catch (error) {
+            console.error('Error uploading image to Pinata:', error);
+            setMessage('Failed to mint NFT.');
+        } finally {
+            setMinting(false);
+        }
     };
+
 
     return (
         <div className="flex flex-col justify-center items-center bg-transparent">
-
             <MintBanner />
 
             <div className="text-center p-6 rounded-lg">
@@ -53,20 +81,23 @@ const MintNFT: React.FC = () => {
                     className="mb-4 p-2 bg-gray-700 text-white w-full"
                 ></textarea>
                 <button
-                    onClick={() => mintNFT()}
-                    className="text-white px-6 py-2 mr-2"
+                    onClick={mintNFT}
+                    className="text-white px-6 py-2 mr-2 bg-gray-700 rounded"
+                    disabled={minting}
                 >
-                    Mint without listing
+                    {minting ? 'Minting...' : 'Mint without listing'}
                 </button>
                 <button
-                    onClick={() => mintNFT()} // Adjust if needed for different functionality
-                    className="bg-gradient-to-r text-white px-6 py-2 min-h-[60px]"
+                    onClick={mintNFT} // Adjust if needed for different functionality
+                    className="bg-gradient-to-r text-white px-6 py-2 min-h-[60px] rounded"
+                    disabled={minting}
                 >
-                    Mint and list immediately
+                    {minting ? 'Minting...' : 'Mint and list immediately'}
                 </button>
+                {message && <p className="text-white mt-4">{message}</p>}
             </div>
         </div>
     );
-}
+};
 
 export default MintNFT;
