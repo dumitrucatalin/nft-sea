@@ -25,15 +25,6 @@ export default function App({ Component, pageProps }: AppProps) {
   console.log('inside');
 
   return (
-    <WagmiProvider config={config}>
-      {/* <QueryClientProvider client={queryClient}> */}
-      <GlobalStateProvider>
-        <Providers>
-          <Component {...pageProps} />
-        </Providers>
-
-      </GlobalStateProvider>
-      {/* </QueryClientProvider> */}
-    </WagmiProvider>
+    <Component {...pageProps} />
   );
 }
