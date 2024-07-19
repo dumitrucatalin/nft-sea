@@ -47,6 +47,9 @@ module.exports = {
       lineHeight: {
         '64': '64.47px', // This is a specific line height, normally not found in default Tailwind settings
       },
+      borderWidth: {
+        '1': '1px'
+      }
     },
   },
   plugins: [],

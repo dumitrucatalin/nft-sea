@@ -4,6 +4,7 @@ import MintBanner from './MintBanner';
 import MintedNFTDialog from './MintedNFTDialog';
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { parseAbi } from 'viem';
+import Image from 'next/image';
 
 const MintNFT: React.FC = () => {
     const [image, setImage] = useState<File | null>(null);
@@ -53,7 +54,7 @@ const MintNFT: React.FC = () => {
                 console.log('Image uploaded to IPFS with hash:', imageHash);
 
                 writeContract({
-                    address: '0xc507d4FbD9b5Bd102668c00a3eF7ec68bF95C6A1',
+                    address: process.env.NEXT_PUBLIC_NFT_ADDRESS as `0x${string}`,
                     abi: parseAbi(['function mint(address to, string tokenURI_)']),
                     functionName: 'mint',
                     args: [address, imageHash],
@@ -86,6 +87,7 @@ const MintNFT: React.FC = () => {
         }
         if (error) {
             setMessage(`Transaction error: ${error.message}`);
+            setIsDialogOpen(true);
         }
     }, [isConfirming, isConfirmed, error]);
 
@@ -93,25 +95,37 @@ const MintNFT: React.FC = () => {
         <div className="flex flex-col justify-center items-center bg-transparent">
             <MintBanner />
 
-            <div className="text-center p-6 rounded-lg">
-                <h1 className="text-xl font-bold text-white mb-4">Mint New NFT</h1>
-                <input
-                    type="file"
-                    onChange={handleImageChange}
-                    className="mb-4 p-2 bg-gray-700 text-white"
-                />
+            <div className="text-center p-6 rounded-lg max-w-[50vw]">
+                <div className="relative mb-4 w-full min-h-[100px] bg-[#383838] border-1 border-[#9E9E9E] rounded flex flex-col items-center justify-center">
+                    <label htmlFor="file-upload" className="flex items-center justify-center text-white cursor-pointer" >
+                        <Image
+                            src="/png/upload.png"
+                            alt="NFT Sea"
+                            width={20}
+                            height={20}
+                            priority
+                            className="m-2"
+                        />
+                        <p className='text-base font-opensans'>Upload Image</p>
+                    </label>
+                    {/* <span className='text-base text-gray-500 font-opensans'>format supported</span> */}
+                    <span className='text-base text-gray-500 font-opensans'>
+                        {image?.name || 'Format supported'}
+                    </span>
+                    <input id="file-upload" type="file" onChange={handleImageChange} className="hidden" />
+                </div>
                 <input
                     type="text"
                     placeholder="NFT Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="mb-4 p-2 bg-gray-700 text-white w-full"
+                    className="mb-4 p-2 text-white w-full min-h-[60px] bg-[#383838] border-1 border-[#9E9E9E] rounded"
                 />
                 <textarea
                     placeholder="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="mb-4 p-2 bg-gray-700 text-white w-full"
+                    className="mb-4 p-2 bg-[#383838] text-white w-full min-h-[160px] border-1 border-[#9E9E9E] rounded"
                 ></textarea>
                 <button
                     onClick={mintNFT}
@@ -122,7 +136,7 @@ const MintNFT: React.FC = () => {
                 </button>
 
                 <button
-                    onClick={mintNFT} // Adjust if needed for different functionality
+                    onClick={mintNFT}
                     className="bg-gradient-to-r text-white px-6 py-2 min-h-[60px] rounded"
                     disabled={minting}
                 >
