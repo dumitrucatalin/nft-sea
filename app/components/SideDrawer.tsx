@@ -2,6 +2,9 @@ import * as React from 'react';
 import { useChainId, useConnect, useAccount, useDisconnect, Connector } from 'wagmi';
 import Image from 'next/image';
 
+import { useEffect, useState } from 'react';
+
+
 interface SideDrawerProps {
     isOpen: boolean;
     onClose: () => void;
@@ -13,7 +16,15 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
     const { address, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
 
+    // State to manage initial render
+    const [isHydrated, setIsHydrated] = useState(false);
+
     const drawerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Mark the component as hydrated after the initial mount
+        setIsHydrated(true);
+    }, []);
 
     const handleClickOutside = (event: MouseEvent) => {
         if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
@@ -60,6 +71,11 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
             connect({ connector, chainId });
         }
     };
+
+    if (!isHydrated) {
+        // Render nothing or skeleton until the component is hydrated
+        return null;
+    }
 
     return (
         <div
