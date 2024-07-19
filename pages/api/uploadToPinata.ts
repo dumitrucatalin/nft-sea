@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { uploadToPinata } from '@/app/services/pinataService';
 import multiparty from 'multiparty';
 import fs from 'fs';
+import { uploadToPinata } from '../../app/services/pinataService';
 
 export const config = {
     api: {
