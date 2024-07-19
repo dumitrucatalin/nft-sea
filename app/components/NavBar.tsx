@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -31,13 +32,16 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({ toggleWalletDrawer }) => {
   return (
     <nav className="container mx-auto flex justify-between items-center p-4">
-      <Image
-        src="/nft-sea-logo.svg"
-        alt="NFT Sea"
-        width={199}
-        height={70}
-        priority
-      />
+      <Link href="/" passHref>
+        <Image
+          src="/nft-sea-logo.svg"
+          alt="NFT Sea"
+          width={199}
+          height={70}
+          priority
+        />
+      </Link>
+
       <div className="flex gap-4 px-6"
       >
         <p className="text-white font-opensans text-base">Explore Marketplace</p>

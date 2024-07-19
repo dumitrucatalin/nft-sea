@@ -11,20 +11,9 @@ const queryClient = new QueryClient()
 const SmartContractPage: React.FC = () => {
     return (
         <>
-
-
-            {/* <Layout>
-                <WagmiProvider config={config}>
-                    <QueryClientProvider client={queryClient}> */}
-
-            {/* <NFTMarketplace />
-
-                    </QueryClientProvider>
-                </WagmiProvider>
-
-            </Layout> */}
-
-
+            <Layout>
+                <NFTMarketplace />
+            </Layout>
         </>
 
     );
