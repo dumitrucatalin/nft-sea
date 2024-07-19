@@ -5,6 +5,7 @@ import { WagmiProvider } from 'wagmi';
 import { config } from '../config';
 import { GlobalStateProvider } from '../context/GlobalStateProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Providers from '../app/providers';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,11 +26,14 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <GlobalStateProvider>
+      {/* <QueryClientProvider client={queryClient}> */}
+      <GlobalStateProvider>
+        <Providers>
           <Component {...pageProps} />
-        </GlobalStateProvider>
-      </QueryClientProvider>
+        </Providers>
+
+      </GlobalStateProvider>
+      {/* </QueryClientProvider> */}
     </WagmiProvider>
   );
 }
