@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import MintBanner from './MintBanner';
+import Banner from './Banner';
 import MintedNFTDialog from './MintedNFTDialog';
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { parseAbi } from 'viem';
@@ -96,7 +96,7 @@ const MintNFT: React.FC = () => {
 
     return (
         <div className="flex flex-col justify-center items-center bg-transparent">
-            <MintBanner />
+            <Banner title="MINT New NFT" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem tortor quis amet scelerisque vivamus egestas." />
 
             <div className="text-center p-6 rounded-lg max-w-[50vw]">
                 <div className="relative mb-4 w-full min-h-[100px] bg-[#383838] border-1 border-[#9E9E9E] rounded flex flex-col items-center justify-center">

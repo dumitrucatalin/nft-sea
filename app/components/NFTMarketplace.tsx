@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useReadContracts, BaseError } from 'wagmi';
 import { parseAbi } from 'viem';
 import axios from 'axios';
+import Banner from './Banner';
 
 const NFTMarketplace = () => {
     const [contractConfigs, setContractConfigs] = useState<any[]>([]);
@@ -89,7 +90,7 @@ const NFTMarketplace = () => {
     }, [data]);
 
     if (idCounterLoading || urisLoading || isLoading) {
-        return <p>Loading NFTs...</p>;
+        return <p className='text-center'>Loading NFTs...</p>;
     }
 
     if (error || idCounterError) {
@@ -101,18 +102,27 @@ const NFTMarketplace = () => {
     }
 
     return (
-        <div className="grid grid-cols-3 gap-4">
-            {nftData.map((nft, index) => (
-                <div key={index} className="border p-4">
-                    {nft.image && (
-                        <img src={nft.image} alt={`NFT ${index + 1}`} />
-                    )}
-                    <p>{nft.name}</p>
-                    <p>{nft.description}</p>
-                </div>
-            ))}
+
+        <div className='flex flex-col items-center'>
+            <Banner title="Explore NFTs" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem tortor quis amet scelerisque vivamus egestas." />
+            <div className="grid grid-cols-3 gap-4 p-10">
+                {nftData.map((nft, index) => (
+                    <div key={index} className="border p-4 flex flex-col items-center justify-center">
+                        {nft.image && (
+                            <div className="flex items-center justify-center w-64 h-64 rounded">
+                                <img className="object-cover" src={nft.image} alt={`NFT ${index + 1}`} />
+                            </div>
+                        )}
+                        <p>{nft.name}</p>
+                        <p>{nft.description}</p>
+                    </div>
+                ))}
+            </div>
         </div>
+
+
     );
+
 };
 
 export default NFTMarketplace;
