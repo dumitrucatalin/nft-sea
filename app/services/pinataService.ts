@@ -13,23 +13,49 @@ interface PinataResponse {
     Timestamp: string;
 }
 
-export const uploadToPinata = async (fileStream: fs.ReadStream, filename: string, contentType: string): Promise<PinataResponse | null> => {
-    const url = `${PINATA_BASE_URL}/pinning/pinFileToIPFS`;
-
+export const uploadToPinata = async (
+    fileStream: fs.ReadStream,
+    filename: string,
+    contentType: string,
+    name: string,
+    description: string
+): Promise<PinataResponse | null> => {
     try {
-        const data = new FormData();
-        data.append('file', fileStream, { filename, contentType });
+        // Step 1: Upload the file to IPFS
+        const fileUrl = `${PINATA_BASE_URL}/pinning/pinFileToIPFS`;
+        const fileData = new FormData();
+        fileData.append('file', fileStream, { filename, contentType });
 
-        const response = await axios.post(url, data, {
+        const fileResponse = await axios.post(fileUrl, fileData, {
             maxBodyLength: Infinity, // This is needed to prevent axios from throwing an error due to large file size
             headers: {
-                ...data.getHeaders(),
+                ...fileData.getHeaders(),
                 pinata_api_key: PINATA_API_KEY,
                 pinata_secret_api_key: PINATA_API_SECRET,
             },
         });
 
-        return response.data;
+        const fileIpfsHash = fileResponse.data.IpfsHash;
+
+        // Step 2: Upload the metadata to IPFS
+        const metadataUrl = `${PINATA_BASE_URL}/pinning/pinJSONToIPFS`;
+        const metadata = {
+            name,
+            description,
+            image: `https://ipfs.io/ipfs/${fileIpfsHash}`,
+            external_url: `https://ipfs.io/ipfs/${fileIpfsHash}`,
+            attributes: [] // You can customize attributes as needed
+        };
+
+        const metadataResponse = await axios.post(metadataUrl, metadata, {
+            headers: {
+                pinata_api_key: PINATA_API_KEY,
+                pinata_secret_api_key: PINATA_API_SECRET,
+            },
+        });
+        console.log('medatata:', metadataResponse.data);
+
+        return metadataResponse.data;
     } catch (error) {
         console.error(error);
         return null;

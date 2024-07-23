@@ -24,9 +24,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const file = files.file[0];
         const filePath = file.path;
         const fileStream = fs.createReadStream(filePath);
+        const filename = file.originalFilename;
+        const contentType = file.headers['content-type'];
+        const title = fields.title[0];
+        const description = fields.description[0];
 
         try {
-            const pinataResponse = await uploadToPinata(fileStream, file.originalFilename, file.headers['content-type']);
+            const pinataResponse = await uploadToPinata(fileStream, filename, contentType, title, description);
             res.status(200).json(pinataResponse);
         } catch (error) {
             res.status(500).json({ message: 'Error uploading to Pinata', error });

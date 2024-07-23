@@ -1,8 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import React from 'react';
 
-const Footer = () => {
+
+const Footer: React.FC<any> = ({ toggleComponent, showMintNFT }) => {
     return (
         <footer className="bg-black text-white p-4">
             <div className="container mx-auto flex justify-between items-center">
@@ -15,11 +15,9 @@ const Footer = () => {
                 />
                 <span className="font-opensans text-base font-normal text-left"> NFT Sea 2024 © All rights reserved</span>
 
-                <Link href="/marketplace" passHref>
-                    <button className="bg-gradient-to-r text-white py-2 px-4 min-h-[60px] rounded">
-                        Explore Marketplace
-                    </button>
-                </Link>
+                <button className="bg-gradient-to-r text-white py-2 px-4 min-h-[60px] rounded" onClick={toggleComponent}>
+                    {showMintNFT ? 'Explore Marketplace' : 'Mint NFT'}
+                </button>
             </div>
         </footer>
     );

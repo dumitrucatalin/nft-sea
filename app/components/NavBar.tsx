@@ -27,12 +27,13 @@ const Button: React.FC<ButtonProps> = ({
 
 interface NavBarProps {
   toggleWalletDrawer: () => void;
+  showMarketplace: () => void;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ toggleWalletDrawer }) => {
+const NavBar: React.FC<NavBarProps> = ({ toggleWalletDrawer, showMarketplace }) => {
   return (
     <nav className="container mx-auto flex justify-between items-center p-4">
-      <Link href="/" passHref>
+      <Link href="/" passHref onClick={showMarketplace}>
         <Image
           src="/nft-sea-logo.svg"
           alt="NFT Sea"

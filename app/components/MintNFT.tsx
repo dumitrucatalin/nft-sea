@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import MintBanner from './MintBanner';
+import Banner from './Banner';
 import MintedNFTDialog from './MintedNFTDialog';
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { parseAbi } from 'viem';
@@ -13,7 +13,7 @@ const MintNFT: React.FC = () => {
     const [minting, setMinting] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [mintedNFT, setMintedNFT] = useState<{ imageHash: string; title: string; description: string } | null>(null);
+    const [mintedNFT, setMintedNFT] = useState<{ metadataHash: string; title: string; description: string } | null>(null);
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -40,6 +40,9 @@ const MintNFT: React.FC = () => {
         try {
             const formData = new FormData();
             formData.append('file', image, image.name);
+            formData.append('title', title);
+            formData.append('description', description);
+
 
             const response = await fetch('/api/uploadToPinata', {
                 method: 'POST',
@@ -49,17 +52,17 @@ const MintNFT: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
-                const imageHash = data.IpfsHash;
+                const metadataHash = data.IpfsHash;
 
-                console.log('Image uploaded to IPFS with hash:', imageHash);
+                console.log('Image uploaded to IPFS with hash:', metadataHash);
 
                 writeContract({
                     address: process.env.NEXT_PUBLIC_NFT_ADDRESS as `0x${string}`,
                     abi: parseAbi(['function mint(address to, string tokenURI_)']),
                     functionName: 'mint',
-                    args: [address, imageHash],
+                    args: [address, metadataHash],
                 });
-                setMintedNFT({ imageHash, title, description });
+                setMintedNFT({ metadataHash, title, description });
                 setMessage('Image uploaded to IPFS successfully. Waiting for transaction confirmation...');
             } else {
                 setMessage('Failed to mint NFT.');
@@ -93,7 +96,7 @@ const MintNFT: React.FC = () => {
 
     return (
         <div className="flex flex-col justify-center items-center bg-transparent">
-            <MintBanner />
+            <Banner title="MINT New NFT" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem tortor quis amet scelerisque vivamus egestas." />
 
             <div className="text-center p-6 rounded-lg max-w-[50vw]">
                 <div className="relative mb-4 w-full min-h-[100px] bg-[#383838] border-1 border-[#9E9E9E] rounded flex flex-col items-center justify-center">
