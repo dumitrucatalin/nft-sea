@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle } from '@headlessui/react';
+import axios from 'axios';
 
 interface MintedNFTDialogProps {
     isOpen: boolean;
     onClose: () => void;
     mintedNFT: {
-        imageHash: string;
+        metadataHash: string;
         title: string;
         description: string;
     } | null;
 }
 
 const MintedNFTDialog: React.FC<MintedNFTDialogProps> = ({ isOpen, onClose, mintedNFT }) => {
+    const [metadata, setMetadata] = useState<{ image: string, name: string, description: string } | null>(null);
+
+    useEffect(() => {
+        const fetchMetadata = async () => {
+            if (mintedNFT) {
+                try {
+                    const response = await axios.get(`https://ipfs.io/ipfs/${mintedNFT.metadataHash}`);
+                    setMetadata(response.data);
+                } catch (error) {
+                    console.error('Error fetching metadata from IPFS:', error);
+                }
+            }
+        };
+
+        if (isOpen) {
+            fetchMetadata();
+        } else {
+            setMetadata(null); // Clear metadata when the dialog is closed
+        }
+    }, [isOpen, mintedNFT]);
+
     return (
         <Dialog open={isOpen} onClose={onClose} className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen px-4 text-center">
@@ -20,17 +42,16 @@ const MintedNFTDialog: React.FC<MintedNFTDialogProps> = ({ isOpen, onClose, mint
                     <div className="bg-black px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div className="flex flex-col items-center justify-center">
                             <div className="w-full sm:w-48 mb-4">
-                                {mintedNFT && (
-                                    <img src={`https://ipfs.io/ipfs/${mintedNFT.imageHash}`} alt="Minted NFT" className="h-48 w-full object-cover rounded-md" />
+                                {metadata && (
+                                    <img src={metadata.image} alt="Minted NFT" className="h-48 w-full object-cover rounded-md" />
                                 )}
-
                             </div>
                             <DialogTitle as="h3" className="text-2xl leading-6 font-bold text-white mb-4">
-                                {mintedNFT?.title}
+                                {metadata?.name}
                             </DialogTitle>
                             <div className="mt-2 text-center">
                                 <p className="text-base text-gray-300">
-                                    {mintedNFT?.description}
+                                    {metadata?.description}
                                 </p>
                             </div>
                         </div>

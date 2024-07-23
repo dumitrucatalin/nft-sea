@@ -13,7 +13,7 @@ const MintNFT: React.FC = () => {
     const [minting, setMinting] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [mintedNFT, setMintedNFT] = useState<{ imageHash: string; title: string; description: string } | null>(null);
+    const [mintedNFT, setMintedNFT] = useState<{ metadataHash: string; title: string; description: string } | null>(null);
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -52,17 +52,17 @@ const MintNFT: React.FC = () => {
             const data = await response.json();
 
             if (response.ok) {
-                const imageHash = data.IpfsHash;
+                const metadataHash = data.IpfsHash;
 
-                console.log('Image uploaded to IPFS with hash:', imageHash);
+                console.log('Image uploaded to IPFS with hash:', metadataHash);
 
                 writeContract({
                     address: process.env.NEXT_PUBLIC_NFT_ADDRESS as `0x${string}`,
                     abi: parseAbi(['function mint(address to, string tokenURI_)']),
                     functionName: 'mint',
-                    args: [address, imageHash],
+                    args: [address, metadataHash],
                 });
-                setMintedNFT({ imageHash, title, description });
+                setMintedNFT({ metadataHash, title, description });
                 setMessage('Image uploaded to IPFS successfully. Waiting for transaction confirmation...');
             } else {
                 setMessage('Failed to mint NFT.');
