@@ -40,6 +40,9 @@ const MintNFT: React.FC = () => {
         try {
             const formData = new FormData();
             formData.append('file', image, image.name);
+            formData.append('title', title);
+            formData.append('description', description);
+
 
             const response = await fetch('/api/uploadToPinata', {
                 method: 'POST',
