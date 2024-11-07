@@ -76,8 +76,6 @@ const NFTMarketplace = () => {
                     const metadataResponses = await Promise.all(metadataPromises);
                     const metadata = metadataResponses.filter(Boolean); // Filter out null values
                     setNftData(metadata);
-                    console.log('metadata:', metadata);
-
                 } catch (error) {
                     console.error('Error fetching metadata from IPFS:', error);
                 }

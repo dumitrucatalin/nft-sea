@@ -1,10 +1,11 @@
-"use client"
+"use client";
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import Banner from './Banner';
 import MintedNFTDialog from './MintedNFTDialog';
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { parseAbi } from 'viem';
 import Image from 'next/image';
+import { uploadToPinata } from '../actions/uploadToPinata';
 
 const MintNFT: React.FC = () => {
     const [image, setImage] = useState<File | null>(null);
@@ -38,21 +39,17 @@ const MintNFT: React.FC = () => {
         setMessage('Uploading image to IPFS...');
 
         try {
+            // Create a FormData object and append the image, title, and description
             const formData = new FormData();
-            formData.append('file', image, image.name);
+            formData.append('file', image);
             formData.append('title', title);
             formData.append('description', description);
 
+            // Call the Pinata upload service directly
+            const pinataResponse = await uploadToPinata(formData);
 
-            const response = await fetch('/api/uploadToPinata', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                const metadataHash = data.IpfsHash;
+            if (pinataResponse) {
+                const metadataHash = pinataResponse.IpfsHash;
 
                 console.log('Image uploaded to IPFS with hash:', metadataHash);
 
@@ -79,7 +76,6 @@ const MintNFT: React.FC = () => {
         hash,
     });
 
-    // React to changes in transaction states
     useEffect(() => {
         if (isConfirming) {
             setMessage('Confirming transaction...');
@@ -100,7 +96,7 @@ const MintNFT: React.FC = () => {
 
             <div className="text-center p-6 rounded-lg max-w-[50vw]">
                 <div className="relative mb-4 w-full min-h-[100px] bg-[#383838] border-1 border-[#9E9E9E] rounded flex flex-col items-center justify-center">
-                    <label htmlFor="file-upload" className="flex items-center justify-center text-white cursor-pointer" >
+                    <label htmlFor="file-upload" className="flex items-center justify-center text-white cursor-pointer">
                         <Image
                             src="/png/upload.png"
                             alt="NFT Sea"
@@ -111,7 +107,6 @@ const MintNFT: React.FC = () => {
                         />
                         <p className='text-base font-opensans'>Upload Image</p>
                     </label>
-                    {/* <span className='text-base text-gray-500 font-opensans'>format supported</span> */}
                     <span className='text-base text-gray-500 font-opensans'>
                         {image?.name || 'Format supported'}
                     </span>
@@ -144,14 +139,12 @@ const MintNFT: React.FC = () => {
                     disabled={minting}
                 >
                     {minting || isConfirming ? 'Processing...' : 'Mint and list immediately'}
-
                 </button>
                 {message && (
                     <p className="text-white mt-4 max-w-[80vw] max-h-[300px] overflow-auto break-words p-2">
                         {message}
                     </p>
                 )}
-
             </div>
             <MintedNFTDialog
                 isOpen={isDialogOpen}

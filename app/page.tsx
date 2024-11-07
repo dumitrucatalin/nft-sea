@@ -1,17 +1,5 @@
-import React from "react";
-import Layout from "./components/Layout";
-import MintNFT from "./components/MintNFT";
-import Providers from "./providers";
-import NFTMarketplace from "./components/NFTMarketplace";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-    return (
-        <Providers>
-            <Layout>
-                <MintNFT />
-                {/* <NFTMarketplace /> */}
-            </Layout>
-        </Providers>
-    );
+  redirect("/mint");
 }
-
